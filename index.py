@@ -50,7 +50,7 @@ duck = pygame.image.load(os.path.join(image_path,'duck.png'))
 duck_size = duck.get_rect().size
 duck_width = duck_size[0]
 duck_height = duck_size[1]
-duck_x_pos = (screen_width)
+duck_x_pos = (screen_width)-300
 duck_y_pos = screen_height-stage_height-duck_height
 duck_pop = False
 
@@ -78,6 +78,7 @@ print('hi')
 
 lvl = 0
 tick = 0
+effct = False
 #이벤트 루프
 running = True #게임이 진행중인가
 while running :
@@ -123,6 +124,9 @@ while running :
 
 	if lvl == 3:
 		duck_pop = True
+		if not effct:
+			character_x_pos -= 1000
+			effct = True
 	else:
 		duck_pop = False
 	#총알 이동
@@ -153,8 +157,8 @@ while running :
 					if duck_pop:
 						duck_x_pos+=100
 
-		elif character_x_pos > screen_width-character_width-100:
-			character_x_pos = screen_width-character_width-100
+		elif character_x_pos > screen_width-character_width-600:
+			character_x_pos = screen_width-character_width-600
 			if stage_x <= stage_x2:  #앞으로 가기
 				if stage_x>-(stage_size[0]):
 					stage_x-=100
@@ -169,7 +173,7 @@ while running :
 				else:
 					lvl+=1
 					stage_x2 = stage_x+stage_size[0]
-			if duck_pop:
+			if duck_pop:                
 				duck_x_pos -= 100
 	# 4. 충돌 처리
 
