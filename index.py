@@ -123,8 +123,11 @@ while running :
 	# 3. 게임 캐릭터 위치 정의  
 	character_x_pos += character_x_left + character_x_right
 
-	if lvl == 2:
-		duck_pop = True
+	if lvl == 1:
+		if duck_health>0:
+			duck_pop = True
+		else:
+			duck_pop = False
 		if not effct:
 			character_x_pos -= 1000
 			effct = True
@@ -194,8 +197,7 @@ while running :
 		if weapon_rect.colliderect(duck_rect):
 			g.weapon_to_remove = weapon_idx # 해당무기 없애기 위한 값 설정
 			duck_health-=g.weapon_dmg
-	if duck_health<=0:
-		duck_pop = False
+
 	if g.weapon_to_remove>-1:
 		del g.weapons[g.weapon_to_remove]
 		g.weapon_to_remove = -1
