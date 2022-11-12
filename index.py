@@ -53,6 +53,7 @@ duck_height = duck_size[1]
 duck_x_pos = (screen_width)-300
 duck_y_pos = screen_height-stage_height-duck_height
 duck_pop = False
+duck_health = 100
 
 #캐릭터 이동 방향
 character_x_left = 0
@@ -60,7 +61,7 @@ character_x_right = 0
 lookingr = True
 
 #캐릭터 이동 속도
-character_speed = 5
+character_speed = 50
 
 #점프를 위한 중력
 y_gravity = 1
@@ -122,7 +123,7 @@ while running :
 	# 3. 게임 캐릭터 위치 정의  
 	character_x_pos += character_x_left + character_x_right
 
-	if lvl == 3:
+	if lvl == 2:
 		duck_pop = True
 		if not effct:
 			character_x_pos -= 1000
@@ -136,47 +137,69 @@ while running :
 	#양끝에 닿은 총알 없애기
 	g.weapons = [[w[0],w[1],w[2]] for w in g.weapons if w[0] > 0 and w[0]<screen_width]
 	#스테이지 이동
-	if not duck_pop:
-		if character_x_pos < 100:
-			character_x_pos = 100
-			if lvl>=0:
+	if character_x_pos < 100:
+		character_x_pos = 100
+		if lvl>=0:
+			if not duck_pop:
 				if stage_x <= stage_x2: #뒤로가기
 					if stage_x<0:
-						stage_x+=100
-						stage_x2+=100
+						stage_x+=50
+						stage_x2+=50
 					else:
 						lvl -= 1
 						stage_x2 = stage_x - stage_size2[0]
 				else:
 					if stage_x2<0:
-						stage_x2+=100
-						stage_x+=100	
+						stage_x2+=50
+						stage_x+=50	
 					else:
 						lvl-=1
 						stage_x = stage_x2 - stage_size[0]
-					if duck_pop:
-						duck_x_pos+=100
-
-		elif character_x_pos > screen_width-character_width-600:
-			character_x_pos = screen_width-character_width-600
+	
+	elif character_x_pos > screen_width-character_width-600:
+		character_x_pos = screen_width-character_width-600
+		if not duck_pop:
 			if stage_x <= stage_x2:  #앞으로 가기
 				if stage_x>-(stage_size[0]):
-					stage_x-=100
-					stage_x2-=100
+					stage_x-=50
+					stage_x2-=50
 				else:
 					lvl+=1
 					stage_x = stage_x2+stage_size2[0]
 			else:
 				if stage_x2>-(stage_size2[0]):
-					stage_x2 -= 100
-					stage_x-=100
+					stage_x2 -= 50
+					stage_x-=50
 				else:
 					lvl+=1
 					stage_x2 = stage_x+stage_size[0]
-			if duck_pop:                
-				duck_x_pos -= 100
 	# 4. 충돌 처리
+	character_rect = character.get_rect()
+	character_rect.left = character_x_pos
+	character_rect.top = character_y_pos
+	
+	duck_rect = duck.get_rect()
+	duck_rect.left = duck_x_pos
+	duck_rect.top = duck_y_pos
+	
+	for weapon_idx, weapon_val in enumerate(g.weapons):
+		weapon_pos_x = weapon_val[0]
+		weapon_pos_y = weapon_val[1]
 
+		#무기 rect 정보 업데이트
+		weapon_rect = g.weapon.get_rect()
+		weapon_rect.left = weapon_pos_x
+		weapon_rect.top = weapon_pos_y
+		
+		if weapon_rect.colliderect(duck_rect):
+			g.weapon_to_remove = weapon_idx # 해당무기 없애기 위한 값 설정
+			duck_health-=g.weapon_dmg
+	if duck_health<=0:
+		duck_pop = False
+	if g.weapon_to_remove>-1:
+		del g.weapons[g.weapon_to_remove]
+		g.weapon_to_remove = -1
+    
 
 	# 5. 화면에 그리기
 	screen.blit(background,(0,0))

@@ -18,3 +18,6 @@ weapons = []
 
 #사라질 무기
 weapon_to_remove = -1
+
+#공격력
+weapon_dmg = 8
