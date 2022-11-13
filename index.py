@@ -1,6 +1,7 @@
 import pygame
 import os
 import gun as g
+import button
 
 #무조건 해야하는 부분
 #################################################################################
@@ -36,6 +37,8 @@ stage_size2 = stage2.get_rect().size
 stage_height2 = stage_size2[1]
 stage_x2 = stage_x+stage_size[0]
 stage_y2 = screen_height-stage_height
+
+
 
 #캐릭터 만들기
 
@@ -221,3 +224,12 @@ while running :
 
 
 pygame.quit() #게임 나가기
+
+def main_menu(): #main menu screen
+	while True:
+		SCREEN.blit(background,(0,0))
+		
+		menu_mouse_pos = pygame.mouse.get_pos()
+		menu_text = get_font(100).render("YENA", True,"#b68f40")
+		menu_rect = menu_text.get_rect(center=(640,100))
+		 
