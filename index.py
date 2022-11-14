@@ -225,11 +225,4 @@ while running :
 
 pygame.quit() #게임 나가기
 
-def main_menu(): #main menu screen
-	while True:
-		SCREEN.blit(background,(0,0))
-		
-		menu_mouse_pos = pygame.mouse.get_pos()
-		menu_text = get_font(100).render("YENA", True,"#b68f40")
-		menu_rect = menu_text.get_rect(center=(640,100))
-		 
+ 
