@@ -56,7 +56,9 @@ duck_height = duck_size[1]
 duck_x_pos = (screen_width)-300
 duck_y_pos = screen_height-stage_height-duck_height
 duck_pop = False
+duck_rage = False
 duck_health = 100
+duck_ragehealth = 1000
 
 #캐릭터 이동 방향
 character_x_left = 0
@@ -72,14 +74,29 @@ jump_height = 20
 y_velocity = jump_height
 jumping = False
 
+e_gravity = 2
+e_jump_height = 40
+e_velocity = e_jump_height
+e_jumping = False
+
 #font 정의
 game_font = pygame.font.SysFont('arial',40,True,True)
 total_time = 100
 start_ticks = pygame.time.get_ticks()
 
 game_result = "Game Over"
-print('hi')
 
+#rage mode duck fight
+def bossfight(health,inix,iniy):
+	global e_velocity,e_jump_height,e_gravity
+	in_x,in_y = inix,iniy
+	
+	cur_y = iniy
+	cur_y -= e_velocity
+	e_velocity -= e_gravity
+	if e_velocity < -e_jump_height:
+		e_velocity = e_jump_height
+	return cur_y
 lvl = 0
 tick = 0
 effct = False
@@ -126,17 +143,23 @@ while running :
 	# 3. 게임 캐릭터 위치 정의  
 	character_x_pos += character_x_left + character_x_right
 
-	if lvl == 1:
+	if lvl == 0:
 		if duck_health>0:
 			duck_pop = True
 		else:
 			duck_pop = False
+			duck_rage = True   #rage part
 		if not effct:
 			character_x_pos -= 1000
 			effct = True
 	else:
 		duck_pop = False
-	#총알 이동
+
+	if duck_rage and duck_ragehealth>0:
+		duck_y_pos = bossfight(duck_ragehealth,duck_x_pos,duck_y_pos)
+        
+    
+    #총알 이동
 
 	g.weapons = [[w[0]+g.weapon_speed if w[2] else w[0]-g.weapon_speed,w[1],w[2]] for w in g.weapons]
 
@@ -214,7 +237,7 @@ while running :
 	screen.blit(stage,(stage_x,stage_y))
 	screen.blit(stage2,(stage_x2,stage_y2))
 	screen.blit(character,(character_x_pos,character_y_pos))
-	if duck_pop:
+	if duck_pop or duck_rage:
 		screen.blit(duck,(duck_x_pos,duck_y_pos))
 
 	#경과 시간
