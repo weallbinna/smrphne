@@ -66,7 +66,7 @@ character_x_right = 0
 lookingr = True
 
 #캐릭터 이동 속도
-character_speed = 50
+character_speed = 15
 
 #점프를 위한 중력
 y_gravity = 1
@@ -88,15 +88,18 @@ game_result = "Game Over"
 
 #rage mode duck fight
 def bossfight(health,inix,iniy):
-	global e_velocity,e_jump_height,e_gravity
+	global e_velocity,e_jump_height,e_gravity,character_x_pos,e_jumping
 	in_x,in_y = inix,iniy
 	
 	cur_y = iniy
+	cur_x = inix
+	cur_x+=(character_x_pos-inix)/10
 	cur_y -= e_velocity
 	e_velocity -= e_gravity
 	if e_velocity < -e_jump_height:
 		e_velocity = e_jump_height
-	return cur_y
+		e_jumping = True
+	return (cur_x,cur_y)
 lvl = 0
 tick = 0
 effct = False
@@ -156,8 +159,9 @@ while running :
 		duck_pop = False
 
 	if duck_rage and duck_ragehealth>0:
-		duck_y_pos = bossfight(duck_ragehealth,duck_x_pos,duck_y_pos)
-        
+		if not e_jumping:
+			duck_x_pos,duck_y_pos = bossfight(duck_ragehealth,duck_x_pos,duck_y_pos)
+        	
     
     #총알 이동
 
