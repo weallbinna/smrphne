@@ -88,7 +88,7 @@ game_result = "Game Over"
 
 #rage mode duck fight
 def bossfight(health,inix,iniy):
-	global e_velocity,e_jump_height,e_gravity,character_x_pos,e_jumping
+	global e_velocity,e_jump_height,e_gravity,character_x_pos,e_jumping,cooldown,buncnt
 	in_x,in_y = inix,iniy
 	
 	cur_y = iniy
@@ -96,13 +96,18 @@ def bossfight(health,inix,iniy):
 	cur_x+=(character_x_pos-inix)/10
 	cur_y -= e_velocity
 	e_velocity -= e_gravity
-	if e_velocity < -e_jump_height:
+	if e_velocity < -e_jump_height:    #landed
 		e_velocity = e_jump_height
 		e_jumping = True
+		cooldown = 0
+		buncnt+=1
 	return (cur_x,cur_y)
+	
 lvl = 0
 tick = 0
 effct = False
+cooldown = 0
+buncnt = 0
 #이벤트 루프
 running = True #게임이 진행중인가
 while running :
@@ -159,8 +164,17 @@ while running :
 		duck_pop = False
 
 	if duck_rage and duck_ragehealth>0:
-		if not e_jumping:
+		cooldown+=clock.get_time()
+		if not e_jumping and cooldown >1000 and buncnt<3:
 			duck_x_pos,duck_y_pos = bossfight(duck_ragehealth,duck_x_pos,duck_y_pos)
+			e_jumping = False
+		elif buncnt==3:
+			if duck_x_pos<(screen_width)-300:   #need to fix this condition, cause it could cause an unindentent move
+				duck_x_pos+=100
+			else:
+				buncnt=0
+			
+			
         	
     
     #총알 이동
