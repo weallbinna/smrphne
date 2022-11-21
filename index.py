@@ -2,6 +2,7 @@ import pygame
 import os
 import gun as g
 import button
+import random
 
 #무조건 해야하는 부분
 #################################################################################
@@ -87,8 +88,8 @@ start_ticks = pygame.time.get_ticks()
 game_result = "Game Over"
 
 #rage mode duck fight
-def bossfight(health,inix,iniy):
-	global e_velocity,e_jump_height,e_gravity,character_x_pos,e_jumping,cooldown,buncnt
+def jumpattack(health,inix,iniy):
+	global e_velocity,e_jump_height,e_gravity,character_x_pos,e_jumping,jumpcooldown,buncnt
 	in_x,in_y = inix,iniy
 	
 	cur_y = iniy
@@ -99,15 +100,17 @@ def bossfight(health,inix,iniy):
 	if e_velocity < -e_jump_height:    #landed
 		e_velocity = e_jump_height
 		e_jumping = True
-		cooldown = 0
+		jumpcooldown = 0
 		buncnt+=1
 	return (cur_x,cur_y)
-	
+def firing():
+    pass
 lvl = 0
 tick = 0
 effct = False
-cooldown = 0
+jumpcooldown = 0
 buncnt = 0
+call = 0
 #이벤트 루프
 running = True #게임이 진행중인가
 while running :
@@ -154,28 +157,35 @@ while running :
 	if lvl == 0:
 		if duck_health>0:
 			duck_pop = True
+		elif duck_ragehealth<0:
+			duck_rage = False
 		else:
 			duck_pop = False
 			duck_rage = True   #rage part
+        
 		if not effct:
 			character_x_pos -= 1000
 			effct = True
-	else:
-		duck_pop = False
-
+    
+	
 	if duck_rage and duck_ragehealth>0:
-		cooldown+=clock.get_time()
-		if not e_jumping and cooldown >1000 and buncnt<3:
-			duck_x_pos,duck_y_pos = bossfight(duck_ragehealth,duck_x_pos,duck_y_pos)
-			e_jumping = False
-		elif buncnt==3:
-			if duck_x_pos<(screen_width)-300:   #need to fix this condition, cause it could cause an unindentent move
-				duck_x_pos+=100
-			else:
-				buncnt=0
-			
-			
-        	
+		jumpcooldown+=clock.get_time()
+		if call ==0:
+			call = random.randrange(1,4)   #to make duck do different moves
+		if call == 1:
+			if not e_jumping and jumpcooldown >1000 and buncnt<3:
+				duck_x_pos,duck_y_pos = jumpattack(duck_ragehealth,duck_x_pos,duck_y_pos)
+				e_jumping = False
+			elif buncnt==3:
+				if duck_x_pos<(screen_width)-300: 
+					duck_x_pos+=50
+				else:
+					buncnt=0
+					call = 0
+		elif call == 2:
+			pass
+		else:
+			pass
     
     #총알 이동
 
@@ -187,7 +197,7 @@ while running :
 	if character_x_pos < 100:
 		character_x_pos = 100
 		if lvl>=0:
-			if not duck_pop:
+			if not duck_pop and not duck_rage:
 				if stage_x <= stage_x2: #뒤로가기
 					if stage_x<0:
 						stage_x+=50
@@ -205,7 +215,7 @@ while running :
 	
 	elif character_x_pos > screen_width-character_width-600:
 		character_x_pos = screen_width-character_width-600
-		if not duck_pop:
+		if not duck_pop and not duck_rage:
 			if stage_x <= stage_x2:  #앞으로 가기
 				if stage_x>-(stage_size[0]):
 					stage_x-=50
@@ -241,6 +251,8 @@ while running :
 		if weapon_rect.colliderect(duck_rect):
 			g.weapon_to_remove = weapon_idx # 해당무기 없애기 위한 값 설정
 			duck_health-=g.weapon_dmg
+			if duck_rage:
+				duck_ragehealth-=g.weapon_dmg
 
 	if g.weapon_to_remove>-1:
 		del g.weapons[g.weapon_to_remove]
