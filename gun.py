@@ -20,4 +20,4 @@ weapons = []
 weapon_to_remove = -1
 
 #공격력
-weapon_dmg = 8
+weapon_dmg = 100
